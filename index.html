@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Korean Saju-Style Reading</title>
+<meta name="description" content="Korean Saju-style reading in simple English. Easy birth date input (month/day/year). Overview first. Then choose Topic at the top, and Timeframe inside the topic—deeper reading appears immediately." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  :root{
+    --bg:#0b0f19;
+    --panel: rgba(255,255,255,.06);
+    --text:#e9edf6;
+    --muted: rgba(233,237,246,.72);
+    --line: rgba(255,255,255,.10);
+    --accent:#8ab4ff;
+    --accent2:#b8f3c1;
+    --shadow: 0 18px 60px rgba(0,0,0,.35);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1000px 600px at 15% 10%, rgba(138,180,255,.18), transparent 60%),
+      radial-gradient(900px 600px at 85% 25%, rgba(184,243,193,.14), transparent 55%),
+      radial-gradient(900px 700px at 40% 110%, rgba(255,255,255,.06), transparent 60%),
+      var(--bg);
+    line-height:1.75;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 18px;}
+  header{
+    position:sticky; top:0; z-index:10;
+    backdrop-filter: blur(12px);
+    background: rgba(11,15,25,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .headerInner{padding:16px 0;}
+  .brand{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .sub{margin:6px 0 0;color:var(--muted);font-size:13px;max-width:74ch}
+  nav{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
+  nav a{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:8px 12px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    color:var(--text);
+    text-decoration:none;
+    background: rgba(255,255,255,.04);
+    font-weight:650;
+    font-size:13px;
+  }
+  nav a:hover{background: rgba(255,255,255,.07);}
+
+  main{padding:26px 0 70px;}
+  .grid{display:grid; grid-template-columns:1fr; gap:16px;}
+  @media(min-width:980px){
+    .grid{grid-template-columns: 1fr 320px;}
+    .side{position:sticky; top:90px; height:fit-content;}
+  }
+  .card{
+    border:1px solid var(--line);
+    background: linear-gradient(180deg, var(--panel), rgba(255,255,255,.03));
+    border-radius: var(--radius);
+    padding:18px;
+    box-shadow: var(--shadow);
+  }
+  .card h2{margin:0 0 10px; font-size:18px;}
+  .card h3{margin:14px 0 8px; font-size:15px;}
+  .muted{color:var(--muted); font-size:13px;}
+  .hr{height:1px;background:var(--line); margin:16px 0;}
+
+  label{display:block; font-size:13px; color:var(--muted); margin-top:10px;}
+
+  /* base inputs */
+  select, input, button{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    color:var(--text);
+    font-size:15px;
+    outline:none;
+  }
+
+  button{
+    cursor:pointer;
+    border:1px solid rgba(138,180,255,.35);
+    background: linear-gradient(180deg, rgba(138,180,255,.28), rgba(138,180,255,.14));
+    font-weight:900;
+    letter-spacing:.2px;
+  }
+  button:hover{background: linear-gradient(180deg, rgba(138,180,255,.34), rgba(138,180,255,.16));}
+
+  .formGrid{display:grid; grid-template-columns:1fr; gap:12px;}
+  @media(min-width:720px){ .formGrid{grid-template-columns: 1fr 1fr;} }
+  .dateGrid{display:grid; grid-template-columns: 1fr 1fr 1.2fr; gap:10px;}
+
+  .tabs{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .tab{
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    color:var(--text);
+    font-weight:800;
+    font-size:13px;
+    user-select:none;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .tab:hover{background: rgba(255,255,255,.07);}
+  .tab.active{
+    background: rgba(138,180,255,.22);
+    border-color: rgba(138,180,255,.35);
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    font-size:12px;
+    color:var(--muted);
+  }
+  .pill strong{color:var(--text); font-weight:900;}
+  .mode{
+    display:inline-flex;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid rgba(184,243,193,.38);
+    background: rgba(184,243,193,.12);
+    color: rgba(210,255,222,.95);
+    font-size:11px;
+    font-weight:900;
+    margin-left:8px;
+  }
+  .callout{
+    border:1px solid rgba(138,180,255,.25);
+    background: rgba(138,180,255,.08);
+    padding:12px;
+    border-radius:14px;
+  }
+  .kicker{color:var(--muted); font-size:12px;}
+  ul{margin:10px 0 0 18px;}
+  li{margin:6px 0;}
+
+  .sideCardTitle{font-weight:900; margin:0 0 10px; font-size:14px;}
+  .sideLink{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    color:var(--text);
+    text-decoration:none;
+    margin-top:10px;
+    font-weight:800;
+    font-size:13px;
+  }
+  .sideLink:hover{background: rgba(255,255,255,.07);}
+
+  footer{
+    border-top:1px solid var(--line);
+    background: rgba(11,15,25,.6);
+    padding:18px 0;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  /* ✅ FIX: Birthdate selects – numbers clearer */
+  select{
+    color: rgba(233,237,246,.96) !important;
+    font-weight: 900;
+  }
+  /* when dropdown opens, options are in native UI; setting option color helps many browsers */
+  select option{
+    color:#0b0f19;
+    font-weight:800;
+  }
+  /* placeholder option (Month/Day/Year) slightly muted */
+  select option[data-ph="1"]{
+    color: rgba(233,237,246,.60) !important;
+    font-weight: 700;
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap headerInner">
+    <div class="brand">
+      <div>
+        <h1>Korean Saju-Style Reading</h1>
+        <div class="sub">
+          Overview first. Then choose Topic at the top, and Timeframe inside the topic—deeper reading appears immediately.
+        </div>
+      </div>
+      <nav>
+        <a href="?page=home">Home</a>
+        <a href="?page=guide">Guide</a>
+        <a href="?page=faq">FAQ</a>
+        <a href="?page=privacy">Privacy</a>
+        <a href="?page=contact">Contact</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <section id="app"></section>
+
+    <aside class="side">
+      <div class="card">
+        <div class="sideCardTitle">Examples</div>
+        <a class="sideLink" href="?page=result&date=1990-03-03"><span>Overview only</span><span>→</span></a>
+        <a class="sideLink" href="?page=result&date=1990-03-03&time=09:30"><span>Overview (+ time)</span><span>→</span></a>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Korean Saju-Style Reading</div>
+</footer>
+
+<script>
+/* =========================
+   Params
+========================= */
+const params = new URLSearchParams(window.location.search);
+const page = (params.get("page") || "home").toLowerCase();
+
+const qDate  = params.get("date") || "";
+const qTime  = params.get("time") || "";
+const qTopic = (params.get("topic") || "").toLowerCase();
+const qFrame = (params.get("frame") || "").toLowerCase();
+
+const TOPICS = [
+  {key:"love", label:"Love"},
+  {key:"money", label:"Money"},
+  {key:"career", label:"Career"},
+  {key:"health", label:"Health"},
+  {key:"social", label:"Social"}
+];
+const FRAMES = [
+  {key:"today", label:"Today"},
+  {key:"month", label:"This Month"},
+  {key:"year", label:"This Year"}
+];
+
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+function parseBirth(dateStr){
+  const d = new Date(dateStr + "T00:00:00");
+  if(String(d) === "Invalid Date") return null;
+  return { yyyy:d.getFullYear(), mm:d.getMonth()+1, dd:d.getDate() };
+}
+function parseTimeToNumber(timeStr){
+  if(!timeStr) return null;
+  if(!/^\d{2}:\d{2}$/.test(timeStr)) return null;
+  const n = parseInt(timeStr.replace(":",""), 10);
+  return Number.isFinite(n) ? n : null;
+}
+function timeBucket(timeStr){
+  const n = parseTimeToNumber(timeStr);
+  if(n === null) return null;
+  const hh = Math.floor(n/100);
+  if(hh >= 5 && hh <= 10) return "morning";
+  if(hh >= 11 && hh <= 16) return "day";
+  if(hh >= 17 && hh <= 21) return "evening";
+  return "night";
+}
+
+/* =========================
+   Deterministic generator
+========================= */
+function hashToSeed(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0);
+}
+function mulberry32(a){
+  return function(){
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+}
+function pick(r, arr){ return arr[Math.floor(r()*arr.length)]; }
+function pickN(r, arr, n){
+  const pool = arr.slice();
+  const out = [];
+  for(let i=0;i<n && pool.length;i++){
+    const idx = Math.floor(r()*pool.length);
+    out.push(pool.splice(idx,1)[0]);
+  }
+  return out;
+}
+
+const ELEMENTS = ["Wood (growth)","Fire (expression)","Earth (stability)","Metal (structure)","Water (adaptability)"];
+const YINYANG = ["Yin (receptive, inward)","Yang (active, outward)"];
+
+const SAJU_OVERVIEW = {
+  openers: [
+    "In Korean tradition, Saju (Four Pillars) reads life patterns through Yin–Yang and the Five Elements.",
+    "Traditional Saju is rooted in classical East Asian cosmology: balance (Yin–Yang), change (Five Elements), and timing cycles.",
+    "Saju describes tendencies and timing—less about fixed fate, more about how energy moves and how you respond."
+  ],
+  whatYouAre: [
+    "You carry a stability-first pattern: simplify, stay consistent, and outcomes improve fast.",
+    "You carry a expression-first pattern: focus your energy and momentum becomes your advantage.",
+    "You carry a structure-first pattern: disciplined execution makes you strong.",
+    "You carry a adaptability-first pattern: timing and flexibility turn uncertainty into options."
+  ],
+  pillars: [
+    "‘Four Pillars’ refer to birth year, month, day, and (if known) hour.",
+    "Yin is receptive/inward; Yang is active/outward.",
+    "Five Elements are metaphors for growth, expression, stability, structure, and adaptability."
+  ],
+  strengths: [
+    "You learn patterns quickly and adjust without drama.",
+    "Consistency is your superpower: small repeatable actions win.",
+    "Clarity is your advantage: you do better with clean next steps.",
+    "Timing is your edge: calm first, then action."
+  ],
+  blindspots: [
+    "Doing too much at once—reduce the number of moves.",
+    "Overthinking—one small action gives more clarity.",
+    "Intensity spikes—steady pacing protects decisions.",
+    "Reacting quickly—pause first, then choose."
+  ]
+};
+
+const FRAME_TONE = {
+  today: { heading:"Today", pacing:"Short window: small actions matter more than big theories.",
+    timing:["Aim for one clean move, then pause.","If you feel rushed, slow down first—then decide.","Avoid decisions at emotional peaks."] },
+  month: { heading:"This Month", pacing:"Medium window: build rhythm and repeatable habits.",
+    timing:["Pick one rule and repeat weekly.","Consistency beats intensity this month.","Adjust the system, not your mood."] },
+  year: { heading:"This Year", pacing:"Long window: think in phases (build → refine → expand).",
+    timing:["Choose a direction and deepen it.","Reduce chaos; build foundations.","Small compounding beats dramatic change."] }
+};
+
+const TOPIC_PACK = {
+  love: {
+    focus: ["communication pacing","boundaries with warmth","trust through consistency","emotional clarity","stable connection","repairing misunderstandings early"],
+    risks: ["over-texting and over-explaining","testing instead of asking directly","fast promises to reduce anxiety","reading silence as rejection","trying to ‘win’ a conversation"],
+    do: ["Send one clean message: short, direct, kind.","Ask one real question instead of guessing.","Keep your tone calm.","Follow through once.","Give space after clarity."],
+    avoid: ["Multiple follow-ups in a row.","Passive-aggressive wording.","Reopening old issues without a plan.","Comparisons to the past.","Pressure for immediate answers."]
+  },
+  money: {
+    focus: ["leak control","simple repeatable rules","stability over hype","clear priorities","buffer-building","small wins that compound"],
+    risks: ["impulse spending to change your mood","over-optimism about quick wins","ignoring recurring costs","all-in thinking","deciding when tired"],
+    do: ["Pick one rule and follow it for 7 days.","Check one number.","Cut one recurring cost.","Delay unplanned purchases 24 hours.","Prefer stable progress."],
+    avoid: ["Shopping as stress relief.","Chasing signals.","‘I’ll fix it later’ budgets.","Buying without comparing.","Starting too many changes at once."]
+  },
+  career: {
+    focus: ["one priority at a time","shipping proof","clean execution","reputation through delivery","skill-stacking","clarity via small outputs"],
+    risks: ["multitasking all day","planning without shipping","saying yes too fast","perfectionism delays","unclear boundaries"],
+    do: ["Choose one meaningful task and finish it.","Create proof.","Ask one clarifying question.","Work in one uninterrupted block.","Ship smallest complete version."],
+    avoid: ["Context switching.","Extra work to feel productive.","Waiting for motivation.","Overpromising timelines.","Endless revisions without feedback."]
+  },
+  health: {
+    focus: ["routine strength","recovery timing","stable inputs","stress-load reduction","gentle consistency","sleep as foundation"],
+    risks: ["extreme swings","late-night stimulation","skipping meals then overeating","overtraining on low energy","ignoring early signals"],
+    do: ["Hydrate and take a short walk.","Protect your sleep window.","Keep meals simple and regular.","Choose low-friction movement.","Reduce stimulation before bed."],
+    avoid: ["All-or-nothing plans.","Late caffeine when stressed.","Hard workouts on poor sleep.","Comparing pace to others.","Stacking too many changes."]
+  },
+  social: {
+    focus: ["reputation cycles","clear follow-through","warm directness","closing loops","quality connections","less noise, more trust"],
+    risks: ["overexplaining to be liked","gossip loops","saying yes then disappearing","reacting instantly","vague promises"],
+    do: ["Reply with clarity and warmth.","Confirm one detail.","Follow through on one commitment.","Close loops politely.","Choose quality conversations."],
+    avoid: ["Joining drama.","Ambiguous wording.","Overcommitting.","Instant replies when irritated.","Leaving messages unanswered too long."]
+  }
+};
+
+function buildOverview(dateStr, timeStr){
+  const birth = parseBirth(dateStr);
+  if(!birth) return null;
+
+  const hasTime = parseTimeToNumber(timeStr) !== null;
+  const seed = hashToSeed(`${dateStr}|${hasTime ? timeStr : ""}|overview`);
+  const r = mulberry32(seed);
+
+  const primary = pick(r, ELEMENTS);
+  const secondary = pick(r, ELEMENTS.filter(x=>x!==primary));
+  const yy = pick(r, YINYANG);
+
+  const opener = pick(r, SAJU_OVERVIEW.openers);
+  const typeLine = pick(r, SAJU_OVERVIEW.whatYouAre);
+  const termLines = pickN(r, SAJU_OVERVIEW.pillars, 3);
+  const strength = pick(r, SAJU_OVERVIEW.strengths);
+  const blindspot = pick(r, SAJU_OVERVIEW.blindspots);
+
+  const timeNuance = hasTime
+    ? (timeBucket(timeStr)==="morning" ? "Birth time nuance: Morning energy favors clean starts—keep your first move simple and specific."
+      : timeBucket(timeStr)==="day" ? "Birth time nuance: Daytime energy favors steady action—do less, but do it fully."
+      : timeBucket(timeStr)==="evening" ? "Birth time nuance: Evening energy favors closure—finish loops and keep communication clean."
+      : "Birth time nuance: Night energy favors depth—protect rest and avoid rushed decisions.")
+    : "Optional: Add birth time for extra nuance around pacing and instincts.";
+
+  const coreGuidance = pickN(r, [
+    "When uncertain, reduce the number of choices. Clarity rises when options shrink.",
+    "Your best outcomes come from small repeatable actions, not one big emotional decision.",
+    "If you feel pressure, pause first. A calm mind chooses better timing.",
+    "Keep one rule, one focus, one finish. Then move to the next thing."
+  ], 3);
+
+  const microPlan = [
+    "Step 1 (2 minutes): write your current situation in one sentence.",
+    "Step 2 (5 minutes): list two options only (not five).",
+    "Step 3 (5 minutes): take one small action that reduces uncertainty.",
+    "Stop point: after the action, pause and observe before doing more."
+  ];
+
+  const closing = pick(r, [
+    "This is a ‘clarity-first’ life pattern. Keep the next move clean, and your timing improves naturally.",
+    "This is a ‘consistency-first’ life pattern. Repeat one good habit and let results compound.",
+    "This is a ‘pacing-first’ life pattern. Slow down first—then your choices become sharper.",
+    "This is a ‘structure-first’ life pattern. Build one simple system and trust the process."
+  ]);
+
+  return {
+    birth, hasTime, timeStr: hasTime ? timeStr : "",
+    opener, yy, primary, secondary,
+    typeLine, termLines, strength, blindspot, timeNuance,
+    coreGuidance, microPlan, closing
+  };
+}
+
+function buildDeep(dateStr, timeStr, topicKey, frameKey){
+  const birth = parseBirth(dateStr);
+  if(!birth) return null;
+
+  const topicOk = TOPICS.some(x=>x.key===topicKey) ? topicKey : "love";
+  const frameOk = FRAMES.some(x=>x.key===frameKey) ? frameKey : "today";
+  const hasTime = parseTimeToNumber(timeStr) !== null;
+
+  const seed = hashToSeed(`${dateStr}|${hasTime ? timeStr : ""}|${topicOk}|${frameOk}`);
+  const r = mulberry32(seed);
+
+  const pack = TOPIC_PACK[topicOk];
+  const ft = FRAME_TONE[frameOk];
+
+  const keyThemes = pickN(r, pack.focus, 3);
+  const risks = pickN(r, pack.risks, 3);
+  const dos = pickN(r, pack.do, 4);
+  const avoids = pickN(r, pack.avoid, 4);
+  const timing = pickN(r, ft.timing, 3);
+
+  const micro = [
+    "Step 1 (2 minutes): name the exact goal (one sentence).",
+    "Step 2 (5 minutes): choose one action that moves it forward.",
+    "Step 3 (5 minutes): do it now, then stop and reassess."
+  ];
+
+  const closing = pick(r, [
+    "Keep it simple: one clear action beats ten emotional moves.",
+    "Consistency wins this cycle—stick to one rule.",
+    "Timing matters: calm first, then action.",
+    "Choose fewer moves, done better—quality wins."
+  ]);
+
+  return { topic: topicOk, frame: frameOk, ft, keyThemes, risks, dos, avoids, timing, micro, closing };
+}
+
+/* =========================
+   Date dropdown helpers
+   - Control shows Month/Day/Year
+   - Options show numbers only
+   - Placeholder marked with data-ph="1"
+========================= */
+function buildYearOptions(startYear=1940, endYear=(new Date()).getFullYear()){
+  const years = [];
+  for(let y=endYear; y>=startYear; y--) years.push(y);
+  return years;
+}
+function daysInMonth(year, month){ return new Date(year, month, 0).getDate(); }
+
+function setSelectOptions(sel, values, placeholderText){
+  sel.innerHTML = "";
+  const ph = document.createElement("option");
+  ph.value = "";
+  ph.textContent = placeholderText;
+  ph.setAttribute("data-ph","1");     // ✅ placeholder marker
+  ph.disabled = true;
+  ph.selected = true;
+  sel.appendChild(ph);
+
+  values.forEach(v=>{
+    const opt = document.createElement("option");
+    opt.value = String(v);
+    opt.textContent = String(v);      // ✅ numeric only
+    sel.appendChild(opt);
+  });
+}
+function tryPrefillFromISO(iso){
+  const b = parseBirth(iso);
+  if(!b) return null;
+  return {y:b.yyyy, m:b.mm, d:b.dd};
+}
+
+/* =========================
+   Render
+========================= */
+const app = document.getElementById("app");
+
+function renderHome(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>Generate your overview (full reading)</h2>
+      <div class="muted">Birth time is optional. Overview comes first.</div>
+
+      <div class="formGrid">
+        <div>
+          <label>Birth date (required)</label>
+          <div class="dateGrid">
+            <select id="bdMonth"></select>
+            <select id="bdDay"></select>
+            <select id="bdYear"></select>
+          </div>
+          <div class="muted" style="margin-top:8px;">Select Month/Day/Year. Then generate.</div>
+        </div>
+
+        <div>
+          <label>Birth time (optional)</label>
+          <input type="time" id="birthtime" value="${escapeHtml(qTime)}" />
+          <div class="muted" style="margin-top:8px;">Optional: adds nuance around pacing and instincts.</div>
+        </div>
+      </div>
+
+      <button id="goBtn" style="margin-top:14px;">Generate → Overview</button>
+
+      <div class="hr"></div>
+      <div class="pill"><strong>Traditional base</strong> Inspired by Saju (Four Pillars), Yin–Yang, and Five Elements—explained simply.</div>
+    </div>
+  `;
+
+  const selM = document.getElementById("bdMonth");
+  const selD = document.getElementById("bdDay");
+  const selY = document.getElementById("bdYear");
+
+  setSelectOptions(selM, Array.from({length:12},(_,i)=>i+1), "Month");
+  setSelectOptions(selY, buildYearOptions(1940), "Year");
+  setSelectOptions(selD, Array.from({length:31},(_,i)=>i+1), "Day");
+
+  const pre = tryPrefillFromISO(qDate);
+  if(pre){
+    selM.value = String(pre.m);
+    selY.value = String(pre.y);
+    refreshDays();
+    selD.value = String(pre.d);
+  }
+
+  function refreshDays(){
+    const m = parseInt(selM.value,10);
+    const y = parseInt(selY.value,10);
+    if(!m || !y){
+      setSelectOptions(selD, Array.from({length:31},(_,i)=>i+1), "Day");
+      return;
+    }
+    const max = daysInMonth(y, m);
+
+    const current = selD.value;
+    setSelectOptions(selD, Array.from({length:max},(_,i)=>i+1), "Day");
+    if(current && parseInt(current,10) <= max) selD.value = current;
+  }
+  selM.addEventListener("change", refreshDays);
+  selY.addEventListener("change", refreshDays);
+
+  document.getElementById("goBtn").addEventListener("click", ()=>{
+    const m = parseInt(selM.value,10);
+    const d = parseInt(selD.value,10);
+    const y = parseInt(selY.value,10);
+    if(!m || !d || !y){
+      alert("Please select Month, Day, and Year.");
+      return;
+    }
+    const dateStr = `${y}-${pad2(m)}-${pad2(d)}`;
+    const timeStr = document.getElementById("birthtime").value || "";
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("page","result");
+    url.searchParams.set("date", dateStr);
+    if(parseTimeToNumber(timeStr) !== null) url.searchParams.set("time", timeStr);
+    else url.searchParams.delete("time");
+
+    url.searchParams.delete("topic");
+    url.searchParams.delete("frame");
+    window.location.href = url.toString();
+  });
+}
+
+function renderResult(){
+  if(!qDate){
+    app.innerHTML = `
+      <div class="card">
+        <h2>Missing birth date</h2>
+        <div class="muted">Go back and select your birth date.</div>
+        <div class="hr"></div>
+        <a class="tab" href="?page=home">Back to Home</a>
+      </div>
+    `;
+    return;
+  }
+
+  const ov = buildOverview(qDate, qTime);
+  if(!ov){
+    app.innerHTML = `
+      <div class="card">
+        <h2>Invalid date</h2>
+        <div class="muted">Please check the date format.</div>
+        <div class="hr"></div>
+        <a class="tab" href="?page=home">Back to Home</a>
+      </div>
+    `;
+    return;
+  }
+
+  const meta = `${qDate}${ov.hasTime ? " • " + ov.timeStr : ""}`;
+
+  const currentTopic = TOPICS.some(x=>x.key===qTopic) ? qTopic : "";
+  const currentFrame = FRAMES.some(x=>x.key===qFrame) ? qFrame : "";
+  const deepReady = (currentTopic && currentFrame);
+  const deep = deepReady ? buildDeep(qDate, qTime, currentTopic, currentFrame) : null;
+
+  app.innerHTML = `
+    <div class="card" id="topChooser">
+      <h2>Choose a Topic</h2>
+      <div class="muted">Pick a topic first. Then choose a timeframe (Today / This Month / This Year).</div>
+
+      <div class="tabs" id="topicTabs"></div>
+
+      <div class="hr"></div>
+
+      <div id="frameArea">
+        <h3 style="margin-top:0;">Choose a Timeframe</h3>
+        <div class="tabs" id="frameTabs"></div>
+        <button id="showBtn" style="margin-top:14px;">Show deeper reading</button>
+      </div>
+    </div>
+
+    <div id="deepMount"></div>
+
+    <div class="card">
+      <h2>Your full reading (overview) ${ov.hasTime ? `<span class="mode">More detail (time)</span>` : ""}</h2>
+      <div class="muted">${escapeHtml(meta)}</div>
+
+      <div class="hr"></div>
+
+      <h3>1) What Saju is (traditional base)</h3>
+      <div class="callout">
+        <div><b>${escapeHtml(ov.opener)}</b></div>
+        <div class="hr"></div>
+        <ul>${ov.termLines.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>2) Your overall type</h3>
+      <div class="callout">
+        <div><b>Overall balance:</b> ${escapeHtml(ov.yy)} with <b>${escapeHtml(ov.primary)}</b> supported by <b>${escapeHtml(ov.secondary)}</b></div>
+        <div style="margin-top:10px;"><b>Plain-English summary:</b> ${escapeHtml(ov.typeLine)}</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>3) Strength & blind spot</h3>
+      <ul>
+        <li><b>Strength:</b> ${escapeHtml(ov.strength)}</li>
+        <li><b>Blind spot:</b> ${escapeHtml(ov.blindspot)}</li>
+      </ul>
+
+      <div class="hr"></div>
+
+      <h3>4) Birth time nuance</h3>
+      <div class="callout">${escapeHtml(ov.timeNuance)}</div>
+
+      <div class="hr"></div>
+
+      <h3>5) Core guidance (works across topics)</h3>
+      <ul>${ov.coreGuidance.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+      <div class="hr"></div>
+
+      <h3>6) 12-minute micro plan</h3>
+      <div class="callout"><ul style="margin:0 0 0 18px;">${ov.microPlan.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
+
+      <div class="hr"></div>
+
+      <h3>7) Closing note</h3>
+      <div>${escapeHtml(ov.closing)}</div>
+    </div>
+  `;
+
+  let stateTopic = currentTopic || "love";
+  let stateFrame = currentFrame || "today";
+
+  const topicTabs = document.getElementById("topicTabs");
+  const frameTabs = document.getElementById("frameTabs");
+  const showBtn = document.getElementById("showBtn");
+
+  function tabEl(label, active, onClick){
+    const d = document.createElement("div");
+    d.className = "tab" + (active ? " active" : "");
+    d.textContent = label;
+    d.addEventListener("click", onClick);
+    return d;
+  }
+
+  function renderTopicTabs(){
+    topicTabs.innerHTML = "";
+    TOPICS.forEach(t=>{
+      topicTabs.appendChild(tabEl(t.label, stateTopic===t.key, ()=>{
+        stateTopic = t.key;
+        renderAll();
+      }));
+    });
+  }
+
+  function renderFrameTabs(){
+    frameTabs.innerHTML = "";
+    FRAMES.forEach(f=>{
+      frameTabs.appendChild(tabEl(f.label, stateFrame===f.key, ()=>{
+        stateFrame = f.key;
+        renderAll();
+      }));
+    });
+  }
+
+  function renderDeep(){
+    const deep2 = buildDeep(qDate, qTime, stateTopic, stateFrame);
+    const mount = document.getElementById("deepMount");
+
+    const topicLabel = TOPICS.find(x=>x.key===deep2.topic)?.label || deep2.topic;
+    const frameLabel = FRAMES.find(x=>x.key===deep2.frame)?.label || deep2.frame;
+
+    mount.innerHTML = `
+      <div class="card" id="deepCard">
+        <h2>Deeper reading: ${escapeHtml(topicLabel)} · ${escapeHtml(frameLabel)}</h2>
+        <div class="muted">${escapeHtml(meta)}</div>
+
+        <div class="hr"></div>
+        <h3>1) Snapshot</h3>
+        <div class="callout"><b>${escapeHtml(deep2.ft.heading)}:</b> ${escapeHtml(deep2.ft.pacing)}</div>
+
+        <div class="hr"></div>
+        <h3>2) Main theme</h3>
+        <div>
+          The core theme is <b>${escapeHtml(deep2.keyThemes[0])}</b>, supported by
+          <b>${escapeHtml(deep2.keyThemes[1])}</b> and <b>${escapeHtml(deep2.keyThemes[2])}</b>.
+        </div>
+
+        <div class="hr"></div>
+        <h3>3) Timing guidance</h3>
+        <ul>${deep2.timing.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+        <div class="hr"></div>
+        <h3>4) DO (what helps)</h3>
+        <ul>${deep2.dos.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+        <div class="hr"></div>
+        <h3>5) AVOID (what weakens results)</h3>
+        <ul>${deep2.avoids.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+        <div class="hr"></div>
+        <h3>6) Watch-outs</h3>
+        <ul>${deep2.risks.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+        <div class="hr"></div>
+        <h3>7) 12-minute micro plan</h3>
+        <div class="callout"><ul style="margin:0 0 0 18px;">${deep2.micro.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul></div>
+
+        <div class="hr"></div>
+        <h3>8) Closing note</h3>
+        <div>${escapeHtml(deep2.closing)}</div>
+      </div>
+    `;
+  }
+
+  function renderAll(){
+    renderTopicTabs();
+    renderFrameTabs();
+  }
+
+  renderAll();
+
+  // If URL already has topic/frame, show deep immediately
+  if(deep){
+    stateTopic = currentTopic || stateTopic;
+    stateFrame = currentFrame || stateFrame;
+    renderAll();
+    renderDeep();
+  } else {
+    document.getElementById("deepMount").innerHTML = `
+      <div class="card">
+        <h2>Deeper reading will appear here</h2>
+        <div class="muted">Select a topic and timeframe, then click “Show deeper reading”.</div>
+      </div>
+    `;
+  }
+
+  showBtn.addEventListener("click", ()=>{
+    const url = new URL(window.location.href);
+    url.searchParams.set("page","result");
+    url.searchParams.set("date", qDate);
+    if(parseTimeToNumber(qTime) !== null) url.searchParams.set("time", qTime);
+    else url.searchParams.delete("time");
+
+    url.searchParams.set("topic", stateTopic);
+    url.searchParams.set("frame", stateFrame);
+
+    window.location.href = url.toString() + "#deepCard";
+  });
+}
+
+function renderGuide(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>Guide: What is Saju (Four Pillars)?</h2>
+      <p>
+        <b>Saju</b> is a traditional Korean framework rooted in classical East Asian cosmology.
+        It reads patterns using <b>Yin–Yang</b> and the <b>Five Elements</b>, traditionally considering birth year, month, day, and hour.
+      </p>
+      <p class="muted">This site keeps the traditional tone but explains it in practical English.</p>
+      <div class="hr"></div>
+      <a class="tab" href="?page=home">Back to Home</a>
+    </div>
+  `;
+}
+function renderFAQ(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>FAQ</h2>
+      <h3>Is birth time required?</h3>
+      <p class="muted">No. Optional. It adds nuance around pacing and instincts.</p>
+      <h3>Do you store data?</h3>
+      <p class="muted">No. This is a static site and uses URL parameters to generate text.</p>
+      <div class="hr"></div>
+      <a class="tab" href="?page=home">Back to Home</a>
+    </div>
+  `;
+}
+function renderPrivacy(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>Privacy Policy</h2>
+      <p>This website does not collect or store personal data. Inputs are used to generate your reading.</p>
+      <p class="muted">If ads are added in the future, third-party vendors may use cookies according to their policies.</p>
+      <div class="hr"></div>
+      <a class="tab" href="?page=home">Back to Home</a>
+    </div>
+  `;
+}
+function renderContact(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>Contact</h2>
+      <p class="muted">Questions or corrections:</p>
+      <div class="pill"><strong>Email</strong> k.sajureading@gmail.com</div>
+      <div class="hr"></div>
+      <a class="tab" href="?page=home">Back to Home</a>
+    </div>
+  `;
+}
+
+switch(page){
+  case "result": renderResult(); break;
+  case "guide": renderGuide(); break;
+  case "faq": renderFAQ(); break;
+  case "privacy": renderPrivacy(); break;
+  case "contact": renderContact(); break;
+  default: renderHome();
+}
+</script>
+</body>
+</html>
